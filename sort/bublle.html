@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+</head>
+
+<body>
+    <canvas id="canvas" width="800" height="400"></canvas>
+    <script type="text/javascript">
+    const WIDTH = 400,
+        HEIGHT = 400;
+    const COLUMN_WIDTH = 15,
+        COLUMN_MARGIN = 1;
+    const LENGTH = ~~(WIDTH / (COLUMN_MARGIN + COLUMN_WIDTH))
+    let animationTime = 1;
+    let sortArray = new Array();
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    init();
+    sort(ctx);
+
+    function sort(ctx) {
+
+        for (let i = 0; i < LENGTH; i++) {
+            let minIndex = i;
+            for (let j = i + 1; j < LENGTH; j++) {
+                if (sortArray[j] < sortArray[minIndex]) {
+                    minIndex = j;
+                }
+                let copyArr = JSON.parse(JSON.stringify(sortArray));
+                //
+                updateView(ctx, copyArr, i, j, minIndex)
+            }
+            swap(i, minIndex);
+            let copyArr = JSON.parse(JSON.stringify(sortArray));
+            updateView(ctx, copyArr, i, -1, -1)
+        }
+    }
+
+
+
+    function updateView(ctx, array, orderIndex, currentCompareIndex, currentMinIndex) {
+        setTimeout(function() {
+            render(ctx, array, orderIndex, currentCompareIndex, currentMinIndex)
+        }, animationTime++ * 10)
+    }
+
+    function init() {
+        for (var i = 0; i < LENGTH; i++) {
+            sortArray[i] = ~~((Math.random() * HEIGHT) + 1);
+        }
+    }
+
+    function swap(i, j) {
+        let item = sortArray[i];
+        sortArray[i] = sortArray[j];
+        sortArray[j] = item
+    }
+
+    function render(cxt, array, orderIndex, currentCompareIndex, currentMinIndex) {
+        ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        for (var i = 0; i < LENGTH; i++) {
+            if (i < orderIndex) {
+                drawColumn(ctx, i, array[i], '#FFC000');
+            } else if (i === currentCompareIndex) {
+                drawColumn(ctx, i, array[i], '#002060');
+            } else if (i === currentMinIndex) {
+                drawColumn(ctx, i, array[i], '#7030A0');
+            } else {
+                if (orderIndex === LENGTH - 1) {
+                    drawColumn(ctx, i, array[i], '#FFC000');
+                } else {
+                    drawColumn(ctx, i, array[i], '#00B050');
+                }
+            }
+
+        }
+    }
+
+    function drawColumn(ctx, index, height, color) {
+        const x = (COLUMN_WIDTH + COLUMN_MARGIN) * index;
+        const y = HEIGHT;
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, COLUMN_WIDTH, -height);
+    }
+    </script>
+</body>
+
+</html>
